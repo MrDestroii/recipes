@@ -8,6 +8,9 @@ import * as R from 'ramda'
 
 import routerSaga from "./router/saga";
 
+import { authReducer } from "./auth/reducer";
+import { authSaga } from "./auth/saga";
+
 const isDevelopmentMode = R.equals(process.env.NODE_ENV, "development")
 
 const history = createHistory();
@@ -18,6 +21,7 @@ const middleware = [sagaMiddleware, routerMiddleware(history)];
 
 const reducers = combineReducers({
   router: connectRouter(history),
+  auth: authReducer,
 });
 
 const store = applyMiddleware(...middleware)(createStore)(
@@ -26,5 +30,6 @@ const store = applyMiddleware(...middleware)(createStore)(
 );
 
 sagaMiddleware.run(routerSaga);
+sagaMiddleware.run(authSaga)
 
 export { store, history };
