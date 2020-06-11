@@ -1,0 +1,10 @@
+.auth-logout-button {
+  position: fixed !important;
+  right: 10px;
+  top: 10px;
+  background-color: rgb(220, 0, 78) !important;
+}
+
+.auth-logout-button-icon path {
+  fill: #fff;
+}

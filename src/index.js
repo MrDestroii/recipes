@@ -1,14 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import App from "components/App";
+import { Provider } from "react-redux";
+import { ConnectedRouter } from "connected-react-router";
+
+import { App } from "components/app/App";
+
+import { store, history } from "store";
 
 import * as serviceWorker from "./serviceWorker";
 
 import "./index.css";
-import { Provider } from "react-redux";
-import { store, history } from "store";
-import { ConnectedRouter } from "connected-react-router";
 
 ReactDOM.render(
   <React.StrictMode>
