@@ -4,14 +4,17 @@ import createSagaMiddleware from "redux-saga";
 import { routerMiddleware, connectRouter } from "connected-react-router";
 import { createBrowserHistory as createHistory } from "history";
 
-import * as R from 'ramda'
+import * as R from "ramda";
 
 import routerSaga from "./router/saga";
 
 import { authReducer } from "./auth/reducer";
 import { authSaga } from "./auth/saga";
 
-const isDevelopmentMode = R.equals(process.env.NODE_ENV, "development")
+import { recipeReducer } from "./recipe/reducer";
+import { recipeSaga } from "./recipe/saga";
+
+const isDevelopmentMode = R.equals(process.env.NODE_ENV, "development");
 
 const history = createHistory();
 
@@ -22,14 +25,18 @@ const middleware = [sagaMiddleware, routerMiddleware(history)];
 const reducers = combineReducers({
   router: connectRouter(history),
   auth: authReducer,
+  recipe: recipeReducer,
 });
 
 const store = applyMiddleware(...middleware)(createStore)(
   reducers,
-  isDevelopmentMode && window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  isDevelopmentMode &&
+    window.__REDUX_DEVTOOLS_EXTENSION__ &&
+    window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
 sagaMiddleware.run(routerSaga);
-sagaMiddleware.run(authSaga)
+sagaMiddleware.run(authSaga);
+sagaMiddleware.run(recipeSaga);
 
 export { store, history };
