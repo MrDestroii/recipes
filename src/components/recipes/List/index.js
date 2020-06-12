@@ -33,7 +33,7 @@ export const RecipesList = (props) => {
         return (
           <TableRow key={item.id}>
             <TableCell component="th" scope="row">
-              <Link to={`/recipe/${item.id}`}>{item.name}</Link>
+              <Link to={`/recipe/info/${item.id}`}>{item.name}</Link>
             </TableCell>
             <TableCell component="th" scope="row">
               <div className="recipe-item-likes">
