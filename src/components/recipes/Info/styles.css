@@ -1,0 +1,21 @@
+.recipe-info-piper {
+  padding: 10px;
+}
+
+.recipe-info-photo {
+  max-height: 500px;
+  max-width: 300px;
+}
+
+.recipe-info-alt-ingredient-ingredients {
+  padding-left: 10px;
+}
+
+.recipe-info-title {
+  display: flex;
+  align-items: center;
+}
+
+.likes-list-paper {
+  padding: 5px;
+}

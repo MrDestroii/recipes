@@ -5,6 +5,7 @@ import { Switch, Route } from "react-router-dom";
 import { Auth } from "components/auth/Auth";
 import { AuthButton } from "components/auth/AuthButton";
 import { RecipesList } from "components/recipes/List";
+import { RecipeInfo } from "components/recipes/Info";
 import { NotFound } from "components/ui/NotFound";
 
 import { renderNotify } from "utils/notify";
@@ -64,6 +65,7 @@ export const App = () => {
       <Switch>
         <Route exact path="/" component={RecipesList} />
         <Route path="/auth" render={renderAuth} />
+        <Route exact path="/recipe/:id" component={RecipeInfo} />
         <Route component={NotFound} />
       </Switch>
     </div>

@@ -12,4 +12,16 @@ export const recipeActions = {
     type: recipeTypes.RECIPE_GET_ITEMS_FAILURE,
     payload: error,
   }),
+  getItem: (id) => ({
+    type: recipeTypes.RECIPE_GET_ITEM,
+    payload: id
+  }),
+  getItemSuccess: (data) => ({
+    type: recipeTypes.RECIPE_GET_ITEM_SUCCESS,
+    payload: data,
+  }),
+  getItemFailure: (error) => ({
+    type: recipeTypes.RECIPE_GET_ITEM_FAILURE,
+    payload: error,
+  }),
 };

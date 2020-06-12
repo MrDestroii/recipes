@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 import * as R from "ramda";
 
@@ -10,6 +11,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import LikeIcons from "@material-ui/icons/Favorite";
 
 import { recipeActions } from "store/recipe/actions";
 import { getItems } from "store/recipe/selectors";
@@ -31,13 +33,16 @@ export const RecipesList = (props) => {
         return (
           <TableRow key={item.id}>
             <TableCell component="th" scope="row">
-              {item.name}
+              <Link to={`/recipe/${item.id}`}>{item.name}</Link>
             </TableCell>
             <TableCell component="th" scope="row">
-              {R.length(item.likes)}
+              <div className="recipe-item-likes">
+                {R.length(item.likes)}
+                <LikeIcons />
+              </div>
             </TableCell>
             <TableCell component="th" scope="row">
-              {item.complexity}
+              {`${item.complexity}/10`}
             </TableCell>
             <TableCell component="th" scope="row">
               <div className="recipe-item-ingredients-list">
