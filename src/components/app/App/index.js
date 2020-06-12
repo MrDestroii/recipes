@@ -6,6 +6,7 @@ import { Auth } from "components/auth/Auth";
 import { AuthButton } from "components/auth/AuthButton";
 import { RecipesList } from "components/recipes/List";
 import { RecipeInfo } from "components/recipes/Info";
+import { RecipeCreate } from "components/recipes/Create";
 import { AppMenu } from "components/app/Menu";
 import { NotFound } from "components/ui/NotFound";
 
@@ -68,7 +69,7 @@ export const App = () => {
         <Route exact path="/" component={RecipesList} />
         <Route path="/auth" render={renderAuth} />
         <Route exact path="/recipe/info/:id" component={RecipeInfo} />
-        <Route exact path="/recipe/create" render={() => <div>Create</div>} />
+        <Route exact path="/recipe/create" component={RecipeCreate} />
         <Route component={NotFound} />
       </Switch>
     </div>

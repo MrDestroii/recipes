@@ -73,10 +73,13 @@ export const RecipeInfo = () => {
   }, [isNilInfo, info]);
 
   return (
-    <Container maxWidth="xl">
-      <Paper elevation={3} className="recipe-info-piper">
-        {rendererInfo}
-      </Paper>
+    <Container
+      maxWidth="xl"
+      component={Paper}
+      elevation={3}
+      className="recipe-info-piper"
+    >
+      {rendererInfo}
     </Container>
   );
 };

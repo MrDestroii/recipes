@@ -14,6 +14,9 @@ import { authSaga } from "./auth/saga";
 import { recipeReducer } from "./recipe/reducer";
 import { recipeSaga } from "./recipe/saga";
 
+import { ingredientReducer } from "./ingredient/reducer";
+import { ingredientSaga } from "./ingredient/saga";
+
 const isDevelopmentMode = R.equals(process.env.NODE_ENV, "development");
 
 const history = createHistory();
@@ -26,6 +29,7 @@ const reducers = combineReducers({
   router: connectRouter(history),
   auth: authReducer,
   recipe: recipeReducer,
+  ingredient: ingredientReducer
 });
 
 const store = applyMiddleware(...middleware)(createStore)(
@@ -38,5 +42,6 @@ const store = applyMiddleware(...middleware)(createStore)(
 sagaMiddleware.run(routerSaga);
 sagaMiddleware.run(authSaga);
 sagaMiddleware.run(recipeSaga);
+sagaMiddleware.run(ingredientSaga)
 
 export { store, history };

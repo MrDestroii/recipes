@@ -18,3 +18,5 @@ export const oneInspectTrue = (functions = [], value) => {
     );
   }
 };
+
+export const getErrorMessage = (defaultText) => R.pathOr(defaultText, ["response", "data", "message"])
