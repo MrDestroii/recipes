@@ -9,13 +9,14 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 
+import { InfoLikes } from "components/recipes/Likes";
+import { InfoAlternativeIngredients } from "./AlternativeIngredients";
+import { InfoIngredient } from "./Ingredient";
+
 import { recipeActions } from "store/recipe/actions";
 import { getItem } from "store/recipe/selectors";
 
 import "./styles.css";
-import { InfoAlternativeIngredients } from "./AlternativeIngredients";
-import { InfoIngredient } from "./Ingredient";
-import { InfoLikes } from "./Likes";
 
 export const RecipeInfo = () => {
   const dispatch = useDispatch();
@@ -23,10 +24,6 @@ export const RecipeInfo = () => {
 
   const info = useSelector(getItem(id));
   const isNilInfo = useMemo(() => R.isNil(info), [info]);
-
-  if (info) {
-    console.log(info);
-  }
 
   useEffect(() => {
     if (isNilInfo) {
@@ -55,7 +52,7 @@ export const RecipeInfo = () => {
             <Grid container direction="column">
               <div className="recipe-info-title">
                 <Typography variant="h5">{info.name}</Typography>
-                <InfoLikes items={info.likes} />
+                <InfoLikes items={info.likes} recipeId={info.id} />
               </div>
               <Typography variant="subtitle2">Ингредиенты:</Typography>
               <Grid container direction="column">

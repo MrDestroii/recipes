@@ -25,8 +25,8 @@ function* getItems(action) {
 function* getItem(action) {
   try {
     const result = yield call(api.service("recipe").get, action.payload);
-    
-    yield put(recipeActions.getItemSuccess(result))
+
+    yield put(recipeActions.getItemSuccess(result));
   } catch (error) {
     renderNotify({
       title: "Error get recipe",
@@ -40,7 +40,37 @@ function* getItem(action) {
   }
 }
 
+function* changeLike(action) {
+  try {
+    const { userId, recipeId } = action.payload;
+
+    if (R.isNil(userId)) {
+      renderNotify({
+        title: "Вы не авторизованы",
+        text: "Что бы ставить лайки рецептам, необходисо авторизоваться",
+      });
+    } else {
+      const result = yield call(api.service("like").create, {
+        userId,
+        recipeId,
+      });
+      yield put(recipeActions.changeLikeSuccess(result));
+    }
+  } catch (error) {
+    renderNotify({
+      title: "Error change Like",
+      text: R.pathOr(
+        "Error change Like",
+        ["response", "data", "message"],
+        error
+      ),
+    });
+    yield put(recipeActions.changeLikeFailure(error));
+  }
+}
+
 export function* recipeSaga() {
   yield takeEvery(recipeTypes.RECIPE_GET_ITEMS, getItems);
   yield takeEvery(recipeTypes.RECIPE_GET_ITEM, getItem);
+  yield takeEvery(recipeTypes.CHANGE_LIKE_ITEM, changeLike);
 }

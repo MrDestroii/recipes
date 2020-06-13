@@ -8,4 +8,6 @@ export const getIsLogged = createSelector(getState, R.prop('isLogged'))
 
 export const getProfile = createSelector(getState, R.prop('profile'))
 
+export const getProfileId = createSelector(getProfile, R.prop('id'))
+
 export const profileIsNull = createSelector(getProfile, R.isNil)

@@ -11,7 +11,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import LikeIcons from "@material-ui/icons/Favorite";
+
+import { InfoLikes } from "components/recipes/Likes";
 
 import { recipeActions } from "store/recipe/actions";
 import { getItems } from "store/recipe/selectors";
@@ -36,10 +37,7 @@ export const RecipesList = (props) => {
               <Link to={`/recipe/info/${item.id}`}>{item.name}</Link>
             </TableCell>
             <TableCell component="th" scope="row">
-              <div className="recipe-item-likes">
-                {R.length(item.likes)}
-                <LikeIcons />
-              </div>
+              <InfoLikes items={item.likes} recipeId={item.id} />
             </TableCell>
             <TableCell component="th" scope="row">
               {`${item.complexity}/10`}

@@ -1,0 +1,26 @@
+.likes-list-info-wrapper {
+  display: flex;
+}
+
+.likes-list-paper {
+  padding: 5px;
+}
+
+.likes-list-info-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.likes-list-info-icon-text {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  font-size: 0.575rem !important;
+}
+
+.likes-list-info-icon-text.liked {
+  color: #fff;
+}
