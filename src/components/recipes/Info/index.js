@@ -54,6 +54,8 @@ export const RecipeInfo = () => {
                 <Typography variant="h5">{info.name}</Typography>
                 <InfoLikes items={info.likes} recipeId={info.id} />
               </div>
+              <Typography variant="subtitle2">Описание:</Typography>
+              <Typography variant="body2">{info.description || '-'}</Typography>
               <Typography variant="subtitle2">Ингредиенты:</Typography>
               <Grid container direction="column">
                 {rendererIngredients}

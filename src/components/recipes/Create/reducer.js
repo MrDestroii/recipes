@@ -3,6 +3,7 @@ export const initialState = {
   photo: "",
   complexity: 1,
   ingredients: [],
+  description: "",
   alternativeIngredients: {},
   search: {
     ingredient: "",

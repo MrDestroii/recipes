@@ -64,6 +64,7 @@ export const RecipeCreate = () => {
             complexity: data.complexity,
             ingredients: data.ingredients,
             alternativeIngredients: data.alternativeIngredients,
+            description: data.description
           })
         );
       } else {
@@ -177,6 +178,17 @@ export const RecipeCreate = () => {
             min: 1,
           }}
           value={data.complexity}
+          onChange={hadleChangeInput}
+        />
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          label="Описание"
+          name="description"
+          autoFocus
+          value={data.description}
           onChange={hadleChangeInput}
         />
         <MultipleSelect
