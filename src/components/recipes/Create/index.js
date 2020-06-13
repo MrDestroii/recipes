@@ -158,7 +158,6 @@ export const RecipeCreate = () => {
         <TextField
           variant="outlined"
           margin="normal"
-          required
           fullWidth
           name="photo"
           label="Фото"

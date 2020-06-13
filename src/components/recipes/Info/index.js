@@ -17,6 +17,7 @@ import { recipeActions } from "store/recipe/actions";
 import { getItem } from "store/recipe/selectors";
 
 import "./styles.css";
+import { InfoRecipeSteps } from "./Steps";
 
 export const RecipeInfo = () => {
   const dispatch = useDispatch();
@@ -64,6 +65,10 @@ export const RecipeInfo = () => {
                 Альтернативные ингредиенты:
               </Typography>
               <InfoAlternativeIngredients items={info.alternativeIngredients} />
+              <Typography variant="subtitle2">
+                Шаги:
+              </Typography>
+              <InfoRecipeSteps items={info.steps} />
             </Grid>
           </Grid>
         </Grid>
