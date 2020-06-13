@@ -3,9 +3,29 @@ export const initialState = {
   photo: "",
   complexity: 1,
   ingredients: [],
+  alternativeIngredients: {},
   search: {
-    ingredient: ''
-  }
+    ingredient: "",
+  },
+};
+
+export const actions = {
+  changeSearch: (value) => ({
+    type: "change-search-field",
+    payload: { field: "ingredient", value },
+  }),
+  changeData: (field, value) => ({
+    type: "change-data",
+    payload: { field, value },
+  }),
+  ingredientsAdd: (data) => ({
+    type: "ingredients-add",
+    payload: data,
+  }),
+  alternativeIngredientsChange: (ingredientId, value) => ({
+    type: "alternative-ingredients-change",
+    payload: { ingredientId, value },
+  }),
 };
 
 export const recipeCreateReducer = (state = initialState, action) => {
@@ -24,16 +44,27 @@ export const recipeCreateReducer = (state = initialState, action) => {
         ...state,
         search: {
           ...state.search,
-          [field]: value
-        }
-      }
+          [field]: value,
+        },
+      };
     }
 
     case "ingredients-add": {
       return {
         ...state,
-        ingredients: action.payload
-      }
+        ingredients: action.payload,
+      };
+    }
+
+    case "alternative-ingredients-change": {
+      const { ingredientId, value } = action.payload;
+      return {
+        ...state,
+        alternativeIngredients: {
+          ...state.alternativeIngredients,
+          [ingredientId]: value,
+        },
+      };
     }
 
     default:

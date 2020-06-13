@@ -13,4 +13,16 @@ export const ingredientActions = {
     type: ingredientTypes.INGREDIENT_GET_ITEMS_FAILURE,
     payload: error,
   }),
+  create: (data) => ({
+    type: ingredientTypes.INGREDIENT_CREATE,
+    payload: data,
+  }),
+  createSuccess: (data) => ({
+    type: ingredientTypes.INGREDIENT_CREATE_SUCCESS,
+    payload: data,
+  }),
+  createFailure: (error) => ({
+    type: ingredientTypes.INGREDIENT_CREATE_FAILURE,
+    payload: error,
+  }),
 };

@@ -1,9 +1,16 @@
 import { takeEvery, put, call } from "redux-saga/effects";
-import { recipeActions } from "./actions";
-import { recipeTypes } from "./types";
+
+import * as R from "ramda";
+
+import { getErrorMessage } from "helpers/tools";
+
 import { api } from "utils/api";
 import { renderNotify } from "utils/notify";
-import * as R from "ramda";
+
+import { routerActions } from "store/router/actions";
+
+import { recipeActions } from "./actions";
+import { recipeTypes } from "./types";
 
 function* getItems(action) {
   try {
@@ -12,11 +19,7 @@ function* getItems(action) {
   } catch (error) {
     renderNotify({
       title: "Error get recipes",
-      text: R.pathOr(
-        "Error get recipes",
-        ["response", "data", "message"],
-        error
-      ),
+      text: getErrorMessage("Error get recipes")(error),
     });
     yield put(recipeActions.getItemsFailure(error));
   }
@@ -30,11 +33,7 @@ function* getItem(action) {
   } catch (error) {
     renderNotify({
       title: "Error get recipe",
-      text: R.pathOr(
-        "Error get recipe",
-        ["response", "data", "message"],
-        error
-      ),
+      text: getErrorMessage("Error get recipe")(error),
     });
     yield put(recipeActions.getItemFailure(error));
   }
@@ -59,13 +58,25 @@ function* changeLike(action) {
   } catch (error) {
     renderNotify({
       title: "Error change Like",
-      text: R.pathOr(
-        "Error change Like",
-        ["response", "data", "message"],
-        error
-      ),
+      text: getErrorMessage("Error change Like")(error),
     });
     yield put(recipeActions.changeLikeFailure(error));
+  }
+}
+
+function* create(action) {
+  try {
+    const data = action.payload;
+
+    yield call(api.service("recipe").create, data);
+
+    yield put(routerActions.push("/"));
+  } catch (error) {
+    renderNotify({
+      title: "Error create Recipe",
+      text: getErrorMessage("Error create Recipe")(error),
+    });
+    yield put(recipeActions.createFailure(error));
   }
 }
 
@@ -73,4 +84,5 @@ export function* recipeSaga() {
   yield takeEvery(recipeTypes.RECIPE_GET_ITEMS, getItems);
   yield takeEvery(recipeTypes.RECIPE_GET_ITEM, getItem);
   yield takeEvery(recipeTypes.CHANGE_LIKE_ITEM, changeLike);
+  yield takeEvery(recipeTypes.RECIPE_CREATE, create);
 }

@@ -22,6 +22,22 @@ function* getItems(action) {
   }
 }
 
+function* create(action) {
+  try {
+    const data = action.payload;
+    const result = yield call(api.service("ingredient").create, data);
+
+    yield put(ingredientActions.createSuccess(result));
+  } catch (error) {
+    renderNotify({
+      title: "Error create ingredient",
+      text: getErrorMessage("Error create ingredient")(error),
+    });
+    yield put(ingredientActions.createFailure(error));
+  }
+}
+
 export function* ingredientSaga() {
   yield takeEvery(ingredientTypes.INGREDIENT_GET_ITEMS, getItems);
+  yield takeEvery(ingredientTypes.INGREDIENT_CREATE, create);
 }

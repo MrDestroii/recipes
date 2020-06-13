@@ -8,17 +8,16 @@ import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import Chip from "@material-ui/core/Chip";
-
 import { SearchInput } from "components/ui/SearchInput";
 
 import "./styles.css";
 
-const ITEM_HEIGHT = 48;
+const ITEM_HEIGHT = 38;
 const ITEM_PADDING_TOP = 8;
 const menuProps = {
   PaperProps: {
     style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      maxHeight: ITEM_HEIGHT * 7.5 + ITEM_PADDING_TOP,
       width: 250,
     },
   },
@@ -35,6 +34,7 @@ export const MultipleSelect = (props) => {
     withSearchInput,
     onSearch,
     onChange,
+    renderSearchContentEmptyItems,
   } = props;
 
   const [searchValue, setSearchValue] = useState("");
@@ -46,13 +46,11 @@ export const MultipleSelect = (props) => {
     [onChange]
   );
 
-  const selectInput = useMemo(
-    () => <Input required={required} id="select-multiple-chip" />,
-    [required]
-  );
+  const selectInput = useMemo(() => <Input required={required} />, [required]);
   const rendererLabel = useMemo(() => <InputLabel>{label}</InputLabel>, [
     label,
   ]);
+  const isEmptyItems = useMemo(() => R.isEmpty(items), [items]);
 
   const renderValue = useCallback(
     (selected) =>
@@ -65,16 +63,20 @@ export const MultipleSelect = (props) => {
   );
 
   const rendererItems = useMemo(() => {
-    return R.map((item) => {
-      const value = R.prop(keyValue, item);
-      const text = R.prop(keyText, item);
-      return (
-        <MenuItem key={value} value={item} ContainerProps={{ tabIndex: 0 }}>
-          {text}
-        </MenuItem>
-      );
-    })(items);
-  }, [items, keyValue, keyText]);
+    return isEmptyItems ? (
+      <div>Not Found</div>
+    ) : (
+      R.map((item) => {
+        const value = R.prop(keyValue, item);
+        const text = R.prop(keyText, item);
+        return (
+          <MenuItem key={value} value={item}>
+            {text}
+          </MenuItem>
+        );
+      })(items)
+    );
+  }, [items, keyValue, keyText, isEmptyItems]);
 
   const rendererSearchInput = useMemo(() => {
     return (
@@ -83,10 +85,17 @@ export const MultipleSelect = (props) => {
           onSearch={onSearch}
           inputValue={searchValue}
           onChange={setSearchValue}
+          content={isEmptyItems && renderSearchContentEmptyItems}
         />
       )
     );
-  }, [withSearchInput, onSearch, searchValue]);
+  }, [
+    withSearchInput,
+    onSearch,
+    searchValue,
+    renderSearchContentEmptyItems,
+    isEmptyItems,
+  ]);
 
   return (
     <FormControl className="ui-select-form-control">

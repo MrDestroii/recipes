@@ -1,7 +1,7 @@
-import React, { useReducer, useCallback, useEffect } from "react";
+import React, { useReducer, useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import * as R from 'ramda'
+import * as R from "ramda";
 
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
@@ -12,33 +12,128 @@ import { MultipleSelect } from "components/ui/MultipleSelect";
 
 import { ingredientActions } from "store/ingredient/actions";
 import { getItems } from "store/ingredient/selectors";
+import { recipeActions } from "store/recipe/actions";
 
-import { recipeCreateReducer, initialState } from "./reducer";
+import { recipeCreateReducer, initialState, actions } from "./reducer";
 
 import "./styles.css";
+import { renderNotify } from "utils/notify";
 
 export const RecipeCreate = () => {
-  const reduxDispatch = useDispatch()
-
+  const reduxDispatch = useDispatch();
   const [data, dispatch] = useReducer(recipeCreateReducer, initialState);
 
-  const ingredientItems = useSelector(getItems)
+  const ingredientItems = useSelector(getItems);
+
+  const isNotEmptyDataIngredients = useMemo(
+    () => R.compose(R.not, R.isEmpty)(data.ingredients),
+    [data.ingredients]
+  );
 
   useEffect(() => {
-    reduxDispatch(ingredientActions.getItems({ name: data.search.ingredient }))
-  }, [reduxDispatch, data.search.ingredient])
+    reduxDispatch(ingredientActions.getItems({ name: data.search.ingredient }));
+  }, [reduxDispatch, data.search.ingredient]);
 
   const hadleChangeInput = useCallback(({ target: { name, value } }) => {
-    dispatch({ type: "change-data", payload: { field: name, value } });
+    dispatch(actions.changeData(name, value));
   }, []);
 
-  const handleSearchIngredients = useCallback(value => {
-    dispatch({ type: 'change-search-field', payload: { field: 'ingredient', value }})
-  }, [])
+  const handleSearchIngredients = useCallback((value) => {
+    dispatch(actions.changeSearch(value));
+  }, []);
 
-  const handleChangeIngredients = useCallback(value => {
-    dispatch({ type: "ingredients-add", payload: value})
-  }, [])
+  const handleChangeIngredients = useCallback((value) => {
+    dispatch(actions.ingredientsAdd(value));
+  }, []);
+
+  const handleChangeAlternativeIngredients = useCallback(
+    (ingredientId) => (value) => {
+      dispatch(actions.alternativeIngredientsChange(ingredientId, value));
+    },
+    []
+  );
+
+  const handleonSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (isNotEmptyDataIngredients) {
+        reduxDispatch(
+          recipeActions.create({
+            name: data.name,
+            photo: data.photo,
+            complexity: data.complexity,
+            ingredients: data.ingredients,
+            alternativeIngredients: data.alternativeIngredients,
+          })
+        );
+      } else {
+        renderNotify({
+          title: "Error",
+          text: "Необходимо добавить минимум один ингредиент",
+        });
+      }
+    },
+    [reduxDispatch, data, isNotEmptyDataIngredients]
+  );
+
+  const handleCreateIngredient = useCallback(
+    (name) => () => {
+      reduxDispatch(ingredientActions.create({ name }));
+    },
+    [reduxDispatch]
+  );
+
+  const rendererCreateIngredient = useCallback(
+    (valueSearch) => {
+      return (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleCreateIngredient(valueSearch)}
+        >
+          Создать Ингредиент
+        </Button>
+      );
+    },
+    [handleCreateIngredient]
+  );
+
+  const rendererAlternativeIngredients = useMemo(() => {
+    return (
+      isNotEmptyDataIngredients && (
+        <div>
+          <span>Альтернативные ингредиенты</span>
+          {R.map((ingredient) => {
+            const currentDataAlternativeIngredients = R.propOr(
+              [],
+              ingredient.id,
+              data.alternativeIngredients
+            );
+            return (
+              <MultipleSelect
+                key={ingredient.id}
+                items={R.values(ingredientItems)}
+                label={ingredient.name}
+                withSearchInput
+                onSearch={handleSearchIngredients}
+                value={currentDataAlternativeIngredients}
+                keyValue="id"
+                onChange={handleChangeAlternativeIngredients(ingredient.id)}
+                renderSearchContentEmptyItems={rendererCreateIngredient}
+              />
+            );
+          })(data.ingredients)}
+        </div>
+      )
+    );
+  }, [
+    data,
+    ingredientItems,
+    handleSearchIngredients,
+    handleChangeAlternativeIngredients,
+    rendererCreateIngredient,
+    isNotEmptyDataIngredients,
+  ]);
 
   return (
     <Container
@@ -47,7 +142,7 @@ export const RecipeCreate = () => {
       elevation={3}
       className="recipe-create-container"
     >
-      <form className="auth-content-form" onSubmit={() => null}>
+      <form className="auth-content-form" onSubmit={handleonSubmit}>
         <TextField
           variant="outlined"
           margin="normal"
@@ -91,8 +186,10 @@ export const RecipeCreate = () => {
           onSearch={handleSearchIngredients}
           value={data.ingredients}
           keyValue="id"
-          onChange={handleChangeIngredients }
+          onChange={handleChangeIngredients}
+          renderSearchContentEmptyItems={rendererCreateIngredient}
         />
+        {rendererAlternativeIngredients}
         <Button
           type="submit"
           fullWidth

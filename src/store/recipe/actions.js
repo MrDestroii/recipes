@@ -36,4 +36,16 @@ export const recipeActions = {
     type: recipeTypes.CHANGE_LIKE_ITEM_FAILURE,
     payload: error,
   }),
+  create: (data) => ({
+    type: recipeTypes.RECIPE_CREATE,
+    payload: data,
+  }),
+  createSuccess: (data) => ({
+    type: recipeTypes.RECIPE_CREATE_SUCCESS,
+    payload: data,
+  }),
+  createFailure: (error) => ({
+    type: recipeTypes.RECIPE_CREATE_FAILURE,
+    payload: error,
+  }),
 };

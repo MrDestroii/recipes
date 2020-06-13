@@ -72,7 +72,11 @@ export const InfoLikes = (props) => {
   const rendererContent = useMemo(() => {
     const Icon = isYouLiked ? LikeIcon : LikeBorderIcon;
     return (
-      <div ref={likeIconRef} className="likes-list-info-icon" onClick={handleClickLike}>
+      <div
+        ref={likeIconRef}
+        className="likes-list-info-icon"
+        onClick={handleClickLike}
+      >
         <Icon fontSize="large" />
         <Typography
           variant="subtitle2"

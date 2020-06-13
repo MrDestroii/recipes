@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 
 import { Auth } from "components/auth/Auth";
 import { AuthButton } from "components/auth/AuthButton";
@@ -53,6 +53,14 @@ export const App = () => {
     }
   }, [dispatch, isLogged, isAuthPage]);
 
+  const renderRecipeCreate = useCallback(() => {
+    if (isLogged) {
+      return <RecipeCreate />;
+    } else {
+      return <Redirect to="/" />;
+    }
+  }, [isLogged]);
+
   const rendererAuthButton = useMemo(() => {
     return (
       !isAuthPage && (
@@ -69,7 +77,7 @@ export const App = () => {
         <Route exact path="/" component={RecipesList} />
         <Route path="/auth" render={renderAuth} />
         <Route exact path="/recipe/info/:id" component={RecipeInfo} />
-        <Route exact path="/recipe/create" component={RecipeCreate} />
+        <Route exact path="/recipe/create" render={renderRecipeCreate} />
         <Route component={NotFound} />
       </Switch>
     </div>
