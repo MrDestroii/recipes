@@ -1,0 +1,27 @@
+.content {
+  position: relative;
+  width: 100%;
+}
+
+.content-item {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  pointer-events: auto;
+  border-radius: 5px;
+  color: white;
+  font-size: 14.5px;
+  background: lightblue;
+  user-select: none;
+}
+
+.content-item-text {
+  padding: 0 32px;
+}
+
+.content-item-position {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}

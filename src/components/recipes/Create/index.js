@@ -1,4 +1,10 @@
-import React, { useReducer, useCallback, useEffect, useMemo } from "react";
+import React, {
+  useReducer,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import * as R from "ramda";
@@ -9,6 +15,9 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
 import { MultipleSelect } from "components/ui/MultipleSelect";
+import { StepsCreate } from "./Steps";
+
+import { renderNotify } from "utils/notify";
 
 import { ingredientActions } from "store/ingredient/actions";
 import { getItems } from "store/ingredient/selectors";
@@ -17,7 +26,6 @@ import { recipeActions } from "store/recipe/actions";
 import { recipeCreateReducer, initialState, actions } from "./reducer";
 
 import "./styles.css";
-import { renderNotify } from "utils/notify";
 
 export const RecipeCreate = () => {
   const reduxDispatch = useDispatch();
@@ -64,7 +72,7 @@ export const RecipeCreate = () => {
             complexity: data.complexity,
             ingredients: data.ingredients,
             alternativeIngredients: data.alternativeIngredients,
-            description: data.description
+            description: data.description,
           })
         );
       } else {
@@ -136,6 +144,14 @@ export const RecipeCreate = () => {
     isNotEmptyDataIngredients,
   ]);
 
+  const [items, setItems] = useState([
+    { text: "hi1", position: 2 },
+    { text: "hi2", position: 0 },
+    { text: "hi3", position: 1 },
+  ]);
+
+  // console.log(items)
+
   return (
     <Container
       component={Paper}
@@ -199,6 +215,14 @@ export const RecipeCreate = () => {
           keyValue="id"
           onChange={handleChangeIngredients}
           renderSearchContentEmptyItems={rendererCreateIngredient}
+        />
+        <StepsCreate
+          defaultItems={[
+            { text: "hi1", position: 2 },
+            { text: "hi2", position: 0 },
+            { text: "hi3", position: 1 },
+          ]}
+          // onChange={(newItems) => setItems(newItems)}
         />
         {rendererAlternativeIngredients}
         <Button
