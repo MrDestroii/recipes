@@ -68,7 +68,6 @@ export const Select = (props) => {
         selectedItems,
         multiple ? [item] : [...selectedItems, item]
       );
-      console.log(newValueSelectedItems);
       onChange(newValueSelectedItems);
       setSelectedItems(newValueSelectedItems);
 

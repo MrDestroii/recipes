@@ -1,8 +1,9 @@
 import { recipeTypes } from "./types";
 
 export const recipeActions = {
-  getItems: () => ({
+  getItems: (query) => ({
     type: recipeTypes.RECIPE_GET_ITEMS,
+    payload: query
   }),
   getItemsSuccess: (data) => ({
     type: recipeTypes.RECIPE_GET_ITEMS_SUCCESS,
