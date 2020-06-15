@@ -14,7 +14,8 @@ import { recipeTypes } from "./types";
 
 function* getItems(action) {
   try {
-    const result = yield call(api.service("recipe").find, {});
+    const query = action.payload
+    const result = yield call(api.service("recipe").find, query);
     yield put(recipeActions.getItemsSuccess(result));
   } catch (error) {
     renderNotify({

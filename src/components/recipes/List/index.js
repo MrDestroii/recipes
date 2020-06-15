@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -13,6 +13,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 
 import { InfoLikes } from "components/recipes/Likes";
+import { SearchInput } from "components/ui/SearchInput";
 
 import { recipeActions } from "store/recipe/actions";
 import { getItems } from "store/recipe/selectors";
@@ -22,11 +23,17 @@ import "./styles.css";
 export const RecipesList = (props) => {
   const dispatch = useDispatch();
 
+  const [searchValue, setSearchValue] = useState("");
+
   const items = useSelector(getItems);
 
   useEffect(() => {
-    dispatch(recipeActions.getItems());
-  }, [dispatch]);
+    dispatch(recipeActions.getItems({ searchValue }));
+  }, [dispatch, searchValue]);
+
+  const handleOnSearch = useCallback((value) => {
+    setSearchValue(value);
+  }, []);
 
   const rendererItems = useMemo(() => {
     return R.compose(
@@ -58,6 +65,7 @@ export const RecipesList = (props) => {
 
   return (
     <TableContainer component={Paper}>
+      <SearchInput onSearch={handleOnSearch} />
       <Table size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
