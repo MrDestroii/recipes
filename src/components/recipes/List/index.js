@@ -32,6 +32,7 @@ const optionsSortingHeadItems = [
   },
   {
     label: "Лайки",
+    isDisabledOrder: true
   },
   {
     label: "Сложность",
@@ -39,6 +40,8 @@ const optionsSortingHeadItems = [
   },
   {
     label: "Ингредиенты",
+    value: "ingredients",
+    isDisabledOrder: true
   },
   {
     label: "Дата Создания",
@@ -62,6 +65,12 @@ export const RecipesList = () => {
     setSearchValue(value);
   }, []);
 
+  // const rendrerIngredientsFilter = useMemo(() => {
+  //   return (
+  //     <div>hi filter</div>
+  //   )
+  // }, [])
+
   const rendererHeadItems = useMemo(() => {
     return R.map((item) => {
       const isActive = R.propEq("orderBy", item.value)(order);
@@ -76,7 +85,7 @@ export const RecipesList = () => {
 
       return (
         <TableCell key={item.value || item.label}>
-          {item.value ? (
+          {R.not(item.isDisabledOrder) ? (
             <TableSortLabel
               active={isActive}
               direction={direction}

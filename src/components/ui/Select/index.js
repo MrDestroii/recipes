@@ -1,17 +1,14 @@
-import React, { useState, useCallback, useRef, useMemo, memo } from "react";
+import React, { useState, useCallback, useRef, useMemo } from "react";
 
 import * as R from "ramda";
-import classNames from "classnames";
 
 import Popover from "@material-ui/core/Popover";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import Chip from "@material-ui/core/Chip";
-import ArrowDownIcon from "@material-ui/icons/ExpandMore";
-import RemoveIcon from "@material-ui/icons/Clear";
-import InputLabel from "@material-ui/core/InputLabel";
 
 import { SearchInput } from "components/ui/SearchInput";
+
+import { DefaultTarget } from "./DefaultTarget";
 
 import "./styles.css";
 
@@ -21,20 +18,6 @@ const anchorOriginOptions = {
 };
 
 const PaperProps = { className: "ui-select-popover-paper" };
-
-const Remove = memo((props) => {
-  const { onClick } = props;
-  return (
-    <RemoveIcon
-      className="ui-select-value-remove"
-      fontSize="small"
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-    />
-  );
-});
 
 export const Select = (props) => {
   const {
@@ -46,6 +29,7 @@ export const Select = (props) => {
     renderSearchContentEmptyItems,
     onSearch,
     label,
+    innerRefTarget,
   } = props;
 
   const targetRef = useRef();
@@ -54,6 +38,13 @@ export const Select = (props) => {
   const [searchValue, setSearchValue] = useState("");
 
   const isEmptyItems = useMemo(() => R.isEmpty(items), [items]);
+  const isNilInnerRefTarget = useMemo(() => R.isNil(innerRefTarget), [
+    innerRefTarget,
+  ]);
+  const currentAnchorEl = useMemo(
+    () => (isNilInnerRefTarget ? targetRef.current : innerRefTarget.current),
+    [innerRefTarget, isNilInnerRefTarget]
+  );
 
   const handleChangeIsOpen = useCallback(
     (e) => {
@@ -99,47 +90,6 @@ export const Select = (props) => {
     );
   }, [isEmptyItems, items, handleOnSelect, selectedItems]);
 
-  const renderChipContent = useCallback(
-    (item) => {
-      return (
-        <div className="ui-select-values-chip-content">
-          {item.name}
-          <Remove onClick={handleOnSelect(item)} />
-        </div>
-      );
-    },
-    [handleOnSelect]
-  );
-
-  const renderSelectedItems = useMemo(() => {
-    if (R.isEmpty(selectedItems)) {
-      return <div className="ui-select-input-placeholder">{placeholder}</div>;
-    }
-    if (multiple) {
-      return (
-        <div className="ui-select-values-chipes">
-          {R.map((selectedItem) => {
-            return (
-              <Chip
-                key={selectedItem.name}
-                className="ui-select-values-chip"
-                label={renderChipContent(selectedItem)}
-              />
-            );
-          })(selectedItems)}
-        </div>
-      );
-    } else {
-      const item = R.head(selectedItems);
-      return (
-        <div className="ui-select-value">
-          {R.prop("name", item)}
-          <Remove onClick={handleOnSelect(item)} />
-        </div>
-      );
-    }
-  }, [multiple, selectedItems, placeholder, renderChipContent, handleOnSelect]);
-
   const rendererSearchInput = useMemo(() => {
     return (
       withSearch && (
@@ -159,33 +109,37 @@ export const Select = (props) => {
     isEmptyItems,
   ]);
 
-  const rendererArrow = useMemo(
-    () => (
-      <ArrowDownIcon
-        className={classNames("ui-select-input-arrow", { "is-open": isOpen })}
-      />
-    ),
-    [isOpen]
-  );
-
-  const rendererLabel = useMemo(
-    () => label && <InputLabel>{label}</InputLabel>,
-    [label]
-  );
+  const rendererDefaultTarget = useMemo(() => {
+    return (
+      isNilInnerRefTarget && (
+        <DefaultTarget
+          innerRef={targetRef}
+          label={label}
+          isOpen={isOpen}
+          onClick={handleChangeIsOpen}
+          onRemove={handleOnSelect}
+          placeholder={placeholder}
+          selectedItems={selectedItems}
+          multiple={multiple}
+        />
+      )
+    );
+  }, [
+    isNilInnerRefTarget,
+    handleChangeIsOpen,
+    handleOnSelect,
+    isOpen,
+    label,
+    multiple,
+    placeholder,
+    selectedItems,
+  ]);
 
   return (
     <div className="ui-select-wrapper">
-      {rendererLabel}
-      <div
-        ref={targetRef}
-        className="ui-select-input"
-        onClick={handleChangeIsOpen}
-      >
-        {renderSelectedItems}
-        {rendererArrow}
-      </div>
+      {rendererDefaultTarget}
       <Popover
-        anchorEl={targetRef.current}
+        anchorEl={currentAnchorEl}
         open={isOpen}
         onClose={handleChangeIsOpen}
         className="ui-select-popover"
