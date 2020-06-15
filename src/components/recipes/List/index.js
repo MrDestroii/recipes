@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import * as R from "ramda";
+import moment from "moment";
+import "moment/locale/ru";
 
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -11,6 +13,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
 
 import { InfoLikes } from "components/recipes/Likes";
 import { SearchInput } from "components/ui/SearchInput";
@@ -18,22 +21,76 @@ import { SearchInput } from "components/ui/SearchInput";
 import { recipeActions } from "store/recipe/actions";
 import { getItems } from "store/recipe/selectors";
 
+import { useOrder, TYPE_ORDER_ASC } from "./useOrder";
+
 import "./styles.css";
 
-export const RecipesList = (props) => {
+const optionsSortingHeadItems = [
+  {
+    label: "Имя",
+    value: "name",
+  },
+  {
+    label: "Лайки",
+  },
+  {
+    label: "Сложность",
+    value: "complexity",
+  },
+  {
+    label: "Ингредиенты",
+  },
+  {
+    label: "Дата Создания",
+    value: "createdAt",
+  },
+];
+
+export const RecipesList = () => {
   const dispatch = useDispatch();
 
   const [searchValue, setSearchValue] = useState("");
+  const [order, handleChangeOrder] = useOrder(optionsSortingHeadItems)
 
   const items = useSelector(getItems);
 
   useEffect(() => {
-    dispatch(recipeActions.getItems({ searchValue }));
-  }, [dispatch, searchValue]);
+    dispatch(recipeActions.getItems({ searchValue, ...order }));
+  }, [dispatch, searchValue, order]);
 
   const handleOnSearch = useCallback((value) => {
     setSearchValue(value);
   }, []);
+
+  const rendererHeadItems = useMemo(() => {
+    return R.map((item) => {
+      const isActive = R.propEq("orderBy", item.value)(order);
+      const direction = R.compose(
+        R.toLower,
+        R.ifElse(
+          R.always(isActive),
+          R.prop("orderType"),
+          R.always(TYPE_ORDER_ASC)
+        )
+      )(order);
+
+      return (
+        <TableCell key={item.value || item.label}>
+          {item.value ? (
+            <TableSortLabel
+              active={isActive}
+              direction={direction}
+              onClick={handleChangeOrder(item.value)}
+            >
+              {item.label}
+            </TableSortLabel>
+          ) : (
+            item.label
+          )}
+        </TableCell>
+      );
+    })(optionsSortingHeadItems);
+  }, [order, handleChangeOrder]);
 
   const rendererItems = useMemo(() => {
     return R.compose(
@@ -56,6 +113,9 @@ export const RecipesList = (props) => {
                 })(item.ingredients)}
               </div>
             </TableCell>
+            <TableCell component="th" scope="row">
+              {moment(item.createdAt).locale("ru").format("lll")}
+            </TableCell>
           </TableRow>
         );
       }),
@@ -68,12 +128,7 @@ export const RecipesList = (props) => {
       <SearchInput onSearch={handleOnSearch} />
       <Table size="small" aria-label="a dense table">
         <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Likes</TableCell>
-            <TableCell>Complexity</TableCell>
-            <TableCell>Ingredients</TableCell>
-          </TableRow>
+          <TableRow>{rendererHeadItems}</TableRow>
         </TableHead>
         <TableBody>{rendererItems}</TableBody>
       </Table>
