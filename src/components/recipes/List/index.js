@@ -13,26 +13,29 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import TableSortLabel from "@material-ui/core/TableSortLabel";
 
 import { InfoLikes } from "components/recipes/Likes";
+import { FilterIngredietns } from "components/recipes/List/FilterIngredients";
+import { HeadItem } from "components/recipes/List/HeadItem";
 import { SearchInput } from "components/ui/SearchInput";
 
 import { recipeActions } from "store/recipe/actions";
 import { getItems } from "store/recipe/selectors";
 
-import { useOrder, TYPE_ORDER_ASC } from "./useOrder";
+import { useOrder } from "./useOrder";
+import { getOptionsHeadItems } from "./optionsHeadItems";
 
 import "./styles.css";
 
-const optionsSortingHeadItems = [
+const optionsHeadItems = getOptionsHeadItems([
   {
     label: "Имя",
     value: "name",
   },
   {
     label: "Лайки",
-    isDisabledOrder: true
+    value: "likes",
+    isDisabledOrder: true,
   },
   {
     label: "Сложность",
@@ -41,65 +44,64 @@ const optionsSortingHeadItems = [
   {
     label: "Ингредиенты",
     value: "ingredients",
-    isDisabledOrder: true
+    isDisabledOrder: true,
   },
   {
     label: "Дата Создания",
     value: "createdAt",
   },
-];
+]);
 
 export const RecipesList = () => {
   const dispatch = useDispatch();
 
   const [searchValue, setSearchValue] = useState("");
-  const [order, handleChangeOrder] = useOrder(optionsSortingHeadItems)
+  const [filterIngredietns, setFilterIngredients] = useState([]);
+  const [order, handleChangeOrder] = useOrder(optionsHeadItems);
 
   const items = useSelector(getItems);
 
   useEffect(() => {
-    dispatch(recipeActions.getItems({ searchValue, ...order }));
-  }, [dispatch, searchValue, order]);
+    dispatch(
+      recipeActions.getItems({
+        searchValue,
+        ingredients: filterIngredietns,
+        ...order,
+      })
+    );
+  }, [dispatch, searchValue, order, filterIngredietns]);
 
   const handleOnSearch = useCallback((value) => {
     setSearchValue(value);
   }, []);
 
-  // const rendrerIngredientsFilter = useMemo(() => {
-  //   return (
-  //     <div>hi filter</div>
-  //   )
-  // }, [])
+  const headItemsContent = useMemo(() => {
+    return {
+      ingredients: (ref) => (
+        <FilterIngredietns
+          innerRef={ref}
+          onChange={(value) => setFilterIngredients(R.map(R.prop("id"))(value))}
+        />
+      ),
+    };
+  }, []);
 
   const rendererHeadItems = useMemo(() => {
     return R.map((item) => {
-      const isActive = R.propEq("orderBy", item.value)(order);
-      const direction = R.compose(
-        R.toLower,
-        R.ifElse(
-          R.always(isActive),
-          R.prop("orderType"),
-          R.always(TYPE_ORDER_ASC)
-        )
-      )(order);
-
       return (
-        <TableCell key={item.value || item.label}>
-          {R.not(item.isDisabledOrder) ? (
-            <TableSortLabel
-              active={isActive}
-              direction={direction}
-              onClick={handleChangeOrder(item.value)}
-            >
-              {item.label}
-            </TableSortLabel>
-          ) : (
-            item.label
-          )}
-        </TableCell>
+        <HeadItem
+          key={item.value}
+          value={item.value}
+          label={item.label}
+          isDisabledOrder={item.isDisabledOrder}
+          order={order}
+          handleChangeOrder={handleChangeOrder}
+        >
+          {item.content}
+        </HeadItem>
       );
-    })(optionsSortingHeadItems);
-  }, [order, handleChangeOrder]);
+    })(optionsHeadItems.getItemsWithContent(headItemsContent));
+  }, [order, handleChangeOrder, headItemsContent]);
 
   const rendererItems = useMemo(() => {
     return R.compose(

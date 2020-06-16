@@ -30,6 +30,8 @@ export const Select = (props) => {
     onSearch,
     label,
     innerRefTarget,
+    open,
+    onClose,
   } = props;
 
   const targetRef = useRef();
@@ -41,17 +43,14 @@ export const Select = (props) => {
   const isNilInnerRefTarget = useMemo(() => R.isNil(innerRefTarget), [
     innerRefTarget,
   ]);
-  const currentAnchorEl = useMemo(
-    () => (isNilInnerRefTarget ? targetRef.current : innerRefTarget.current),
-    [innerRefTarget, isNilInnerRefTarget]
-  );
 
-  const handleChangeIsOpen = useCallback(
-    (e) => {
+  const handleChangeIsOpen = useCallback(() => {
+    if (R.all(R.isNil, [onClose, open])) {
       setIsOpen(!isOpen);
-    },
-    [isOpen]
-  );
+    } else {
+      onClose();
+    }
+  }, [isOpen, onClose, open]);
 
   const handleOnSelect = useCallback(
     (item) => () => {
@@ -139,8 +138,8 @@ export const Select = (props) => {
     <div className="ui-select-wrapper">
       {rendererDefaultTarget}
       <Popover
-        anchorEl={currentAnchorEl}
-        open={isOpen}
+        anchorEl={R.prop("current", innerRefTarget || targetRef)}
+        open={open || isOpen}
         onClose={handleChangeIsOpen}
         className="ui-select-popover"
         PaperProps={{
