@@ -14,7 +14,8 @@ import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-import { MultipleSelect } from "components/ui/MultipleSelect";
+import { Select } from "components/ui/Select";
+
 import { StepsCreate } from "./Steps";
 
 import { renderNotify } from "utils/notify";
@@ -113,22 +114,16 @@ export const RecipeCreate = () => {
         <div>
           <span>Альтернативные ингредиенты</span>
           {R.map((ingredient) => {
-            const currentDataAlternativeIngredients = R.propOr(
-              [],
-              ingredient.id,
-              data.alternativeIngredients
-            );
             return (
-              <MultipleSelect
+              <Select
                 key={ingredient.id}
                 items={R.values(ingredientItems)}
-                label={ingredient.name}
-                withSearchInput
-                onSearch={handleSearchIngredients}
-                value={currentDataAlternativeIngredients}
-                keyValue="id"
                 onChange={handleChangeAlternativeIngredients(ingredient.id)}
+                withSearch
+                onSearch={handleSearchIngredients}
+                multiple
                 renderSearchContentEmptyItems={rendererCreateIngredient}
+                label={ingredient.name}
               />
             );
           })(data.ingredients)}
@@ -206,15 +201,14 @@ export const RecipeCreate = () => {
           value={data.description}
           onChange={hadleChangeInput}
         />
-        <MultipleSelect
-          label="Ингредиенты"
-          withSearchInput
+        <Select
           items={R.values(ingredientItems)}
-          onSearch={handleSearchIngredients}
-          value={data.ingredients}
-          keyValue="id"
           onChange={handleChangeIngredients}
+          withSearch
+          onSearch={handleSearchIngredients}
+          multiple
           renderSearchContentEmptyItems={rendererCreateIngredient}
+          label="Ингредиенты"
         />
         <StepsCreate
           defaultItems={[

@@ -1,8 +1,10 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import * as R from "ramda";
+import moment from "moment";
+import "moment/locale/ru";
 
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -13,20 +15,93 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 
 import { InfoLikes } from "components/recipes/Likes";
+import { FilterIngredietns } from "components/recipes/List/FilterIngredients";
+import { HeadItem } from "components/recipes/List/HeadItem";
+import { SearchInput } from "components/ui/SearchInput";
 
 import { recipeActions } from "store/recipe/actions";
 import { getItems } from "store/recipe/selectors";
 
+import { useOrder } from "./useOrder";
+import { getOptionsHeadItems } from "./optionsHeadItems";
+
 import "./styles.css";
 
-export const RecipesList = (props) => {
+const optionsHeadItems = getOptionsHeadItems([
+  {
+    label: "Имя",
+    value: "name",
+  },
+  {
+    label: "Лайки",
+    value: "likes",
+    isDisabledOrder: true,
+  },
+  {
+    label: "Сложность",
+    value: "complexity",
+  },
+  {
+    label: "Ингредиенты",
+    value: "ingredients",
+    isDisabledOrder: true,
+  },
+  {
+    label: "Дата Создания",
+    value: "createdAt",
+  },
+]);
+
+export const RecipesList = () => {
   const dispatch = useDispatch();
+
+  const [searchValue, setSearchValue] = useState("");
+  const [filterIngredietns, setFilterIngredients] = useState([]);
+  const [order, handleChangeOrder] = useOrder(optionsHeadItems);
 
   const items = useSelector(getItems);
 
   useEffect(() => {
-    dispatch(recipeActions.getItems());
-  }, [dispatch]);
+    dispatch(
+      recipeActions.getItems({
+        searchValue,
+        ingredients: filterIngredietns,
+        ...order,
+      })
+    );
+  }, [dispatch, searchValue, order, filterIngredietns]);
+
+  const handleOnSearch = useCallback((value) => {
+    setSearchValue(value);
+  }, []);
+
+  const headItemsContent = useMemo(() => {
+    return {
+      ingredients: (ref) => (
+        <FilterIngredietns
+          innerRef={ref}
+          onChange={(value) => setFilterIngredients(R.map(R.prop("id"))(value))}
+        />
+      ),
+    };
+  }, []);
+
+  const rendererHeadItems = useMemo(() => {
+    return R.map((item) => {
+      return (
+        <HeadItem
+          key={item.value}
+          value={item.value}
+          label={item.label}
+          isDisabledOrder={item.isDisabledOrder}
+          order={order}
+          handleChangeOrder={handleChangeOrder}
+        >
+          {item.content}
+        </HeadItem>
+      );
+    })(optionsHeadItems.getItemsWithContent(headItemsContent));
+  }, [order, handleChangeOrder, headItemsContent]);
 
   const rendererItems = useMemo(() => {
     return R.compose(
@@ -49,6 +124,9 @@ export const RecipesList = (props) => {
                 })(item.ingredients)}
               </div>
             </TableCell>
+            <TableCell component="th" scope="row">
+              {moment(item.createdAt).locale("ru").format("lll")}
+            </TableCell>
           </TableRow>
         );
       }),
@@ -58,14 +136,10 @@ export const RecipesList = (props) => {
 
   return (
     <TableContainer component={Paper}>
+      <SearchInput onSearch={handleOnSearch} />
       <Table size="small" aria-label="a dense table">
         <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Likes</TableCell>
-            <TableCell>Complexity</TableCell>
-            <TableCell>Ingredients</TableCell>
-          </TableRow>
+          <TableRow>{rendererHeadItems}</TableRow>
         </TableHead>
         <TableBody>{rendererItems}</TableBody>
       </Table>
