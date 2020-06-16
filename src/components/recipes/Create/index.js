@@ -83,6 +83,7 @@ export const RecipeCreate = () => {
             ingredients: data.ingredients,
             alternativeIngredients: data.alternativeIngredients,
             description: data.description,
+            steps: data.steps
           })
         );
       } else {
