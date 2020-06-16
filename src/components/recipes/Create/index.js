@@ -10,6 +10,8 @@ import Button from "@material-ui/core/Button";
 
 import { Select } from "components/ui/Select";
 
+import { StepsCreate } from "./Steps";
+
 import { renderNotify } from "utils/notify";
 
 import { ingredientActions } from "store/ingredient/actions";
@@ -20,6 +22,8 @@ import { recipeCreateReducer, initialState, actions } from "./reducer";
 
 import "./styles.css";
 
+const isNotEmpty = R.compose(R.not, R.isEmpty);
+
 export const RecipeCreate = () => {
   const reduxDispatch = useDispatch();
   const [data, dispatch] = useReducer(recipeCreateReducer, initialState);
@@ -27,8 +31,13 @@ export const RecipeCreate = () => {
   const ingredientItems = useSelector(getItems);
 
   const isNotEmptyDataIngredients = useMemo(
-    () => R.compose(R.not, R.isEmpty)(data.ingredients),
+    () => isNotEmpty(data.ingredients),
     [data.ingredients]
+  );
+  const isNotEmptySteps = useMemo(() => isNotEmpty(data.steps), [data.steps]);
+  const isAllStepsTextIsNotEmpty = useMemo(
+    () => R.compose(R.all(isNotEmpty), R.map(R.prop("text")))(data.steps),
+    [data.steps]
   );
 
   useEffect(() => {
@@ -54,10 +63,18 @@ export const RecipeCreate = () => {
     []
   );
 
+  const handleChangeSteps = useCallback((value) => {
+    dispatch(actions.changeData("steps", value));
+  }, []);
+
   const handleonSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      if (isNotEmptyDataIngredients) {
+      if (
+        isNotEmptyDataIngredients &&
+        isNotEmptySteps &&
+        isAllStepsTextIsNotEmpty
+      ) {
         reduxDispatch(
           recipeActions.create({
             name: data.name,
@@ -66,16 +83,24 @@ export const RecipeCreate = () => {
             ingredients: data.ingredients,
             alternativeIngredients: data.alternativeIngredients,
             description: data.description,
+            steps: data.steps
           })
         );
       } else {
         renderNotify({
           title: "Error",
-          text: "Необходимо добавить минимум один ингредиент",
+          text:
+            "Форма заполнена неверно, возможно вы не добавили ингредиенты или шаги приготовления!",
         });
       }
     },
-    [reduxDispatch, data, isNotEmptyDataIngredients]
+    [
+      reduxDispatch,
+      data,
+      isNotEmptyDataIngredients,
+      isNotEmptySteps,
+      isAllStepsTextIsNotEmpty,
+    ]
   );
 
   const handleCreateIngredient = useCallback(
@@ -195,6 +220,7 @@ export const RecipeCreate = () => {
           label="Ингредиенты"
         />
         {rendererAlternativeIngredients}
+        <StepsCreate onChange={handleChangeSteps} />
         <Button
           type="submit"
           fullWidth
