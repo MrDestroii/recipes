@@ -1,10 +1,4 @@
-import React, {
-  useReducer,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useReducer, useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import * as R from "ramda";
@@ -28,6 +22,8 @@ import { recipeCreateReducer, initialState, actions } from "./reducer";
 
 import "./styles.css";
 
+const isNotEmpty = R.compose(R.not, R.isEmpty);
+
 export const RecipeCreate = () => {
   const reduxDispatch = useDispatch();
   const [data, dispatch] = useReducer(recipeCreateReducer, initialState);
@@ -35,8 +31,13 @@ export const RecipeCreate = () => {
   const ingredientItems = useSelector(getItems);
 
   const isNotEmptyDataIngredients = useMemo(
-    () => R.compose(R.not, R.isEmpty)(data.ingredients),
+    () => isNotEmpty(data.ingredients),
     [data.ingredients]
+  );
+  const isNotEmptySteps = useMemo(() => isNotEmpty(data.steps), [data.steps]);
+  const isAllStepsTextIsNotEmpty = useMemo(
+    () => R.compose(R.all(isNotEmpty), R.map(R.prop("text")))(data.steps),
+    [data.steps]
   );
 
   useEffect(() => {
@@ -62,10 +63,18 @@ export const RecipeCreate = () => {
     []
   );
 
+  const handleChangeSteps = useCallback((value) => {
+    dispatch(actions.changeData("steps", value));
+  }, []);
+
   const handleonSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      if (isNotEmptyDataIngredients) {
+      if (
+        isNotEmptyDataIngredients &&
+        isNotEmptySteps &&
+        isAllStepsTextIsNotEmpty
+      ) {
         reduxDispatch(
           recipeActions.create({
             name: data.name,
@@ -79,11 +88,18 @@ export const RecipeCreate = () => {
       } else {
         renderNotify({
           title: "Error",
-          text: "Необходимо добавить минимум один ингредиент",
+          text:
+            "Форма заполнена неверно, возможно вы не добавили ингредиенты или шаги приготовления!",
         });
       }
     },
-    [reduxDispatch, data, isNotEmptyDataIngredients]
+    [
+      reduxDispatch,
+      data,
+      isNotEmptyDataIngredients,
+      isNotEmptySteps,
+      isAllStepsTextIsNotEmpty,
+    ]
   );
 
   const handleCreateIngredient = useCallback(
@@ -138,14 +154,6 @@ export const RecipeCreate = () => {
     rendererCreateIngredient,
     isNotEmptyDataIngredients,
   ]);
-
-  const [items, setItems] = useState([
-    { text: "hi1", position: 2 },
-    { text: "hi2", position: 0 },
-    { text: "hi3", position: 1 },
-  ]);
-
-  // console.log(items)
 
   return (
     <Container
@@ -210,15 +218,8 @@ export const RecipeCreate = () => {
           renderSearchContentEmptyItems={rendererCreateIngredient}
           label="Ингредиенты"
         />
-        <StepsCreate
-          defaultItems={[
-            { text: "hi1", position: 2 },
-            { text: "hi2", position: 0 },
-            { text: "hi3", position: 1 },
-          ]}
-          // onChange={(newItems) => setItems(newItems)}
-        />
         {rendererAlternativeIngredients}
+        <StepsCreate onChange={handleChangeSteps} />
         <Button
           type="submit"
           fullWidth

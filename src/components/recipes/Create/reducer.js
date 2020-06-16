@@ -4,6 +4,7 @@ export const initialState = {
   complexity: 1,
   ingredients: [],
   description: "",
+  steps: [],
   alternativeIngredients: {},
   search: {
     ingredient: "",
