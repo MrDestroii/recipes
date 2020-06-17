@@ -30,3 +30,5 @@ export const getAlternativeIngredients = (alternativeIngredients = []) =>
     )(alternativeIngredients);
     return R.set(R.lensProp(elem.id), currentData)(acc);
   }, {});
+
+  export const isCurrentRecipeUser = (userId) => R.compose(R.equals(userId), R.path(["user", "id"]))

@@ -7,7 +7,7 @@ import { Container, Paper } from "@material-ui/core";
 
 import { RecipeForm } from "components/recipes/Form";
 
-import { getAlternativeIngredients } from "helpers/tools";
+import { getAlternativeIngredients, isCurrentRecipeUser } from "helpers/tools";
 
 import { recipeActions } from "store/recipe/actions";
 import { getItem } from "store/recipe/selectors";
@@ -21,10 +21,6 @@ export const RecipeEdit = (props) => {
 
   const recipeInfo = useSelector(getItem(id));
   const userId = useSelector(getProfileId);
-  const isCurrentUserRecipe = useMemo(
-    () => R.compose(R.equals(userId), R.path(["user", "id"]))(recipeInfo),
-    [userId, recipeInfo]
-  );
 
   useEffect(() => {
     dispatch(recipeActions.getItem(id));
@@ -51,7 +47,7 @@ export const RecipeEdit = (props) => {
         R.prop("alternativeIngredients")
       )(recipeInfo);
 
-      return isCurrentUserRecipe ? (
+      return isCurrentRecipeUser(userId)(recipeInfo) ? (
         <RecipeForm
           isEdit
           initialData={{ ...recipeInfo, alternativeIngredients }}
@@ -61,7 +57,7 @@ export const RecipeEdit = (props) => {
         <Redirect to="/" />
       );
     }
-  }, [recipeInfo, handleOnSubmit, isCurrentUserRecipe]);
+  }, [recipeInfo, handleOnSubmit, userId]);
 
   return (
     <Container component={Paper} maxWidth="xl" elevation={3}>
