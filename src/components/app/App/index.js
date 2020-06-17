@@ -1,10 +1,16 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
+
+import * as R from "ramda";
 
 import { Auth } from "components/auth/Auth";
 import { AuthButton } from "components/auth/AuthButton";
 import { RecipesList } from "components/recipes/List";
+import { RecipeInfo } from "components/recipes/Info";
+import { RecipeCreate } from "components/recipes/Create";
+import { RecipeEdit } from "components/recipes/Edit";
+import { AppMenu } from "components/app/Menu";
 import { NotFound } from "components/ui/NotFound";
 
 import { renderNotify } from "utils/notify";
@@ -50,6 +56,28 @@ export const App = () => {
     }
   }, [dispatch, isLogged, isAuthPage]);
 
+  const renderRecipeCreate = useCallback(
+    (props) => {
+      const { match } = props;
+
+      const isEdit = R.compose(
+        R.equals("/recipe/edit/:id"),
+        R.prop("path")
+      )(match);
+
+      if (isLogged) {
+        return isEdit ? (
+          <RecipeEdit id={R.path(["params", "id"])(match)} />
+        ) : (
+          <RecipeCreate />
+        );
+      } else {
+        return <Redirect to="/" />;
+      }
+    },
+    [isLogged]
+  );
+
   const rendererAuthButton = useMemo(() => {
     return (
       !isAuthPage && (
@@ -61,9 +89,13 @@ export const App = () => {
   return (
     <div className="app">
       {rendererAuthButton}
+      <AppMenu isLogged={isLogged} />
       <Switch>
         <Route exact path="/" component={RecipesList} />
         <Route path="/auth" render={renderAuth} />
+        <Route exact path="/recipe/info/:id" component={RecipeInfo} />
+        <Route exact path="/recipe/create" render={renderRecipeCreate} />
+        <Route exact path="/recipe/edit/:id" render={renderRecipeCreate} />
         <Route component={NotFound} />
       </Switch>
     </div>

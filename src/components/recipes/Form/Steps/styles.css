@@ -1,0 +1,58 @@
+.recipe-steps-wrapper {
+  margin: 10px 0;
+}
+
+.recipe-steps {
+  position: relative;
+  width: 100%;
+}
+
+.recipe-steps-item-wrapper {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  pointer-events: auto;
+  border-radius: 5px;
+  color: white;
+  font-size: 14.5px;
+  background: lightblue;
+  user-select: none;
+}
+
+.recipe-steps-item {
+  width: 100%;
+  padding: 0 40px;
+}
+
+.recipe-steps-item-position {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  left: 5px;
+  top: 5px;
+}
+
+.recipe-steps-item-remove {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  cursor: pointer;
+}
+
+.recipe-steps-item-position-icon {
+  cursor: grab;
+  margin-right: 5px;
+}
+
+.recipe-steps-item-position-icon.dragging {
+  cursor: grabbing;
+}
+
+.recipe-steps-item-position-input > input {
+  padding: 8px 14px;
+}
+
+.recipe-steps-item-position-input-label.MuiInputLabel-outlined {
+  transform: translate(14px, 11px) scale(1);
+}

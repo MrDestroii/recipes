@@ -1,0 +1,65 @@
+.ui-select-popover-paper {
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-select-item {
+  margin: 0px !important;
+  padding: 0 10px;
+}
+
+.ui-select-item:hover {
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  background-color: #d5d5d5;
+}
+
+.ui-select-wrapper {
+  margin: 10px 0;
+}
+
+.ui-select-values-chip {
+  margin-bottom: 5px;
+}
+
+.ui-select-values-chip:not(:last-child) {
+  margin-right: 5px;
+}
+
+.ui-select-input {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+  border: 1px solid grey;
+  border-radius: 5px;
+  padding: 5px;
+  padding-right: 25px;
+}
+
+.ui-select-input-arrow {
+  position: absolute;
+  right: 0;
+}
+
+.ui-select-input-arrow {
+  transition: transform ease 0.5s !important;
+}
+
+.ui-select-input-arrow.is-open {
+  transform: rotate(180deg);
+}
+
+.ui-select-values-chipes {
+  margin-bottom: -5px;
+}
+
+.ui-select-value,
+.ui-select-values-chip-content {
+  display: flex;
+  align-items: center;
+}
+
+.ui-select-value-remove {
+  cursor: pointer;
+}

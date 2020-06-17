@@ -62,11 +62,11 @@ export const api = {
       throw new Error("api utils - service incorrect");
     } else {
       return {
-        get: (id) => basic(serviceName, "get", null, { id }),
+        get: (id) => basic(`${serviceName}/${id}`, "get", null),
         create: (body) => basic(serviceName, "post", body),
         find: (query) => basic(serviceName, "get", null, query),
         remove: (id) => basic(serviceName, "delete", null, { id }),
-        update: (id, body) => basic(serviceName, "put", body, { id }),
+        update: (id, body) => basic(`${serviceName}/${id}`, "patch", body),
       };
     }
   },
