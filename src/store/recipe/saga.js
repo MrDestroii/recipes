@@ -14,7 +14,7 @@ import { recipeTypes } from "./types";
 
 function* getItems(action) {
   try {
-    const query = action.payload
+    const query = action.payload;
     const result = yield call(api.service("recipe").find, query);
     yield put(recipeActions.getItemsSuccess(result));
   } catch (error) {
@@ -81,9 +81,26 @@ function* create(action) {
   }
 }
 
+function* update(action) {
+  try {
+    const { id, data } = action.payload;
+
+    yield call(api.service("recipe").update, id, data);
+
+    yield put(routerActions.push("/"));
+  } catch (error) {
+    renderNotify({
+      title: "Error update Recipe",
+      text: getErrorMessage("Error update Recipe")(error),
+    });
+    yield put(recipeActions.updateFailure(error));
+  }
+}
+
 export function* recipeSaga() {
   yield takeEvery(recipeTypes.RECIPE_GET_ITEMS, getItems);
   yield takeEvery(recipeTypes.RECIPE_GET_ITEM, getItem);
   yield takeEvery(recipeTypes.CHANGE_LIKE_ITEM, changeLike);
   yield takeEvery(recipeTypes.RECIPE_CREATE, create);
+  yield takeEvery(recipeTypes.RECIPE_UPDATE, update);
 }

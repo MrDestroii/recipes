@@ -10,20 +10,23 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 
 import { InfoLikes } from "components/recipes/Likes";
+import { EditRecipe } from "components/ui/EditRecipe";
 import { InfoAlternativeIngredients } from "./AlternativeIngredients";
+import { InfoRecipeSteps } from "./Steps";
 import { InfoIngredient } from "./Ingredient";
 
 import { recipeActions } from "store/recipe/actions";
 import { getItem } from "store/recipe/selectors";
+import { getProfileId } from "store/auth/selectors";
 
 import "./styles.css";
-import { InfoRecipeSteps } from "./Steps";
 
 export const RecipeInfo = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
   const info = useSelector(getItem(id));
+  const userId = useSelector(getProfileId)
   const isNilInfo = useMemo(() => R.isNil(info), [info]);
 
   useEffect(() => {
@@ -40,6 +43,8 @@ export const RecipeInfo = () => {
         <InfoIngredient key={ingredient.id} data={ingredient} />
       ))(info.ingredients);
 
+      const isCurrentUserRecipe = R.equals(userId, id)
+
       return (
         <Grid container direction="row">
           <Grid item lg={3}>
@@ -53,6 +58,7 @@ export const RecipeInfo = () => {
             <Grid container direction="column">
               <div className="recipe-info-title">
                 <Typography variant="h5">{info.name}</Typography>
+                {isCurrentUserRecipe && <EditRecipe id={id} />}
                 <InfoLikes items={info.likes} recipeId={info.id} />
               </div>
               <Typography variant="subtitle2">Описание:</Typography>
@@ -74,7 +80,7 @@ export const RecipeInfo = () => {
         </Grid>
       );
     }
-  }, [isNilInfo, info]);
+  }, [isNilInfo, info, id, userId]);
 
   return (
     <Container

@@ -1,4 +1,6 @@
-export const initialState = {
+import { getAlternativeIngredients } from "helpers/tools";
+
+export const initialRecipeInfoData = {
   name: "",
   photo: "",
   complexity: 1,
@@ -6,6 +8,9 @@ export const initialState = {
   description: "",
   steps: [],
   alternativeIngredients: {},
+};
+
+export const initialState = {
   search: {
     ingredient: "",
   },
@@ -20,8 +25,8 @@ export const actions = {
     type: "change-data",
     payload: { field, value },
   }),
-  ingredientsAdd: (data) => ({
-    type: "ingredients-add",
+  ingredientsChange: (data) => ({
+    type: "ingredients-cahnge",
     payload: data,
   }),
   alternativeIngredientsChange: (ingredientId, value) => ({
@@ -51,10 +56,13 @@ export const recipeCreateReducer = (state = initialState, action) => {
       };
     }
 
-    case "ingredients-add": {
+    case "ingredients-cahnge": {
+      const alternativeIngredients = getAlternativeIngredients(state.alternativeIngredients)(action.payload);
+      
       return {
         ...state,
         ingredients: action.payload,
+        alternativeIngredients,
       };
     }
 
