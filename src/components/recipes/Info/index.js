@@ -20,6 +20,7 @@ import { getItem } from "store/recipe/selectors";
 import { getProfileId } from "store/auth/selectors";
 
 import "./styles.css";
+import { isCurrentRecipeUser } from "helpers/tools";
 
 export const RecipeInfo = () => {
   const dispatch = useDispatch();
@@ -43,8 +44,6 @@ export const RecipeInfo = () => {
         <InfoIngredient key={ingredient.id} data={ingredient} />
       ))(info.ingredients);
 
-      const isCurrentUserRecipe = R.equals(userId, id)
-
       return (
         <Grid container direction="row">
           <Grid item lg={3}>
@@ -58,7 +57,7 @@ export const RecipeInfo = () => {
             <Grid container direction="column">
               <div className="recipe-info-title">
                 <Typography variant="h5">{info.name}</Typography>
-                {isCurrentUserRecipe && <EditRecipe id={id} />}
+                {isCurrentRecipeUser(userId)(info) && <EditRecipe id={id} />}
                 <InfoLikes items={info.likes} recipeId={info.id} />
               </div>
               <Typography variant="subtitle2">Описание:</Typography>
