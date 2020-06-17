@@ -1,0 +1,22 @@
+.recipe-item-ingredients-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.recipe-list-head-item-content {
+  display: flex;
+  align-items: center;
+}
+
+.recipe-list-filter-icon {
+  cursor: pointer;
+}
+
+.recipe-item-name-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.recipe-item-name {
+  margin-right: 5px;
+}

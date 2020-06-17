@@ -1,5 +1,10 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Test Users
+ - `test1@test.ml 123456`
+ - `test2@test.ml 123456`
+ - `test3@test.ml 123456`
+
 ## Available Scripts
 
 In the project directory, you can run:
