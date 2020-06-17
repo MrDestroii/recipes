@@ -18,9 +18,11 @@ import { InfoLikes } from "components/recipes/Likes";
 import { FilterIngredietns } from "components/recipes/List/FilterIngredients";
 import { HeadItem } from "components/recipes/List/HeadItem";
 import { SearchInput } from "components/ui/SearchInput";
+import { EditRecipe } from "components/ui/EditRecipe";
 
 import { recipeActions } from "store/recipe/actions";
 import { getItems } from "store/recipe/selectors";
+import { getProfileId } from "store/auth/selectors";
 
 import { useOrder } from "./useOrder";
 import { getOptionsHeadItems } from "./optionsHeadItems";
@@ -60,6 +62,7 @@ export const RecipesList = () => {
   const [order, handleChangeOrder] = useOrder(optionsHeadItems);
 
   const items = useSelector(getItems);
+  const userId = useSelector(getProfileId);
 
   useEffect(() => {
     dispatch(
@@ -106,10 +109,23 @@ export const RecipesList = () => {
   const rendererItems = useMemo(() => {
     return R.compose(
       R.map((item) => {
+        const isItemCurrentUser = R.compose(
+          R.equals(userId),
+          R.path(["user", "id"])
+        )(item);
+
         return (
           <TableRow key={item.id}>
             <TableCell component="th" scope="row">
-              <Link to={`/recipe/info/${item.id}`}>{item.name}</Link>
+              <div className="recipe-item-name-wrapper">
+                <Link
+                  className="recipe-item-name"
+                  to={`/recipe/info/${item.id}`}
+                >
+                  {item.name}
+                </Link>
+                {isItemCurrentUser && <EditRecipe id={item.id} />}
+              </div>
             </TableCell>
             <TableCell component="th" scope="row">
               <InfoLikes items={item.likes} recipeId={item.id} />
@@ -132,7 +148,7 @@ export const RecipesList = () => {
       }),
       R.values
     )(items);
-  }, [items]);
+  }, [items, userId]);
 
   return (
     <TableContainer component={Paper}>

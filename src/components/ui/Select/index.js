@@ -32,11 +32,12 @@ export const Select = (props) => {
     innerRefTarget,
     open,
     onClose,
+    defaultValue
   } = props;
 
   const targetRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState(defaultValue);
   const [searchValue, setSearchValue] = useState("");
 
   const isEmptyItems = useMemo(() => R.isEmpty(items), [items]);
@@ -159,4 +160,5 @@ export const Select = (props) => {
 
 Select.defaultProps = {
   placeholder: "Select...",
+  defaultValue: []
 };

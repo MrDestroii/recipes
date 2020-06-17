@@ -11,3 +11,12 @@
 .recipe-list-filter-icon {
   cursor: pointer;
 }
+
+.recipe-item-name-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.recipe-item-name {
+  margin-right: 5px;
+}
